@@ -1,0 +1,147 @@
+openapi: 3.0.2
+info:
+  title: 'RatingDB API'
+  version: ''
+  description: ''
+ 
+tags:
+  - name: Category
+  - name: Genre
+  - name: Title
+
+
+paths:
+  /titles:
+    get:
+      tags:
+        - Title
+      summary: Get list of all titles
+      responses:
+        '200':
+          description: List of titles returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                    description: number of items
+                  next:
+                    type: string
+                    description: link to the next page of items
+                  previous:
+                    type: string
+                    description: link to the previous page of items
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Title'
+        'default':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Title
+      summary: Add title
+      requestBody:
+        description: Add title
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Title'
+      responses:
+        '201':
+          description: Title added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Title'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /titles/{title_id}:
+    parameters:
+      - name: title_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: number
+    get:
+      tags:
+        - Title
+      summary: Get title
+      responses:
+        '200':
+          description: Title returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Title'
+        '404':
+          description: Title not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - Title
+      summary: Update title
+      responses:
+        '200':
+          description: Title updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Title'
+
+components:
+  schemas:
+  
+    Title:
+      title: Title
+      type: object
+      description: Title
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        year:
+          type: number
+        description:
+          type: string
+        genres:
+          type: array
+          description: list of applicable genres
+          items:
+            type: string
+            description: slug of Genre
+        category:
+          type: string
+          description: slug of Category
+
+    Error:
+      title: Error
+      type: object
+      description: Error details
+      properties:
+        error:
+          type: string
+          description: error details
+      
