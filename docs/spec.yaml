@@ -13,6 +13,27 @@ tags:
 paths:
   /titles:
     get:
+      parameters:
+      - name: category
+        in: query
+        description: 'Filter by slug of category'
+        schema:
+          type: string
+      - name: genre
+        in: query
+        description: 'Filter by slug of genre'
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: 'Filter by partial contents of name'
+        schema:
+          type: string
+      - name: year
+        in: query
+        description: 'Filter by year'
+        schema:
+          type: number
       tags:
         - Title
       summary: Get list of all titles
@@ -109,7 +130,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Title'
-
+        '404':
+          description: Title not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Title
+      summary: Delete title
+      responses:
+        '204':
+          description: Title updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Title'
+        '404':
+          description: Title not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
 components:
   schemas:
   
