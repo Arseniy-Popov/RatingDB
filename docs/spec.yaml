@@ -142,13 +142,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Title
+      summary: Update title
+      responses:
+        '200':
+          description: Title updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Title'
+        '404':
+          description: Title not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
       tags:
         - Title
       summary: Delete title
       responses:
         '204':
-          description: Title updated
+          description: Title deleted
           content:
             application/json:
               schema:
