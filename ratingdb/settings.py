@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "ratings",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "ratingdb.wsgi.application"
+
+# User model
+
+AUTH_USER_MODEL = "users.User"
 
 # Database
 

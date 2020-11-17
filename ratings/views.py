@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .filters import TitleFilter
 from .models import Category, Genre, Title, Review, Comment
-from .permissions import SuperWrite, AdminWrite, SuperEdit, AdminEdit, AnyRead
+# from .permissions import SuperWrite, AdminWrite, SuperEdit, AdminEdit, AnyRead
 from .serializers import (
     CategorySerializer,
     GenreSerializer,

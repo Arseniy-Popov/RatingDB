@@ -11,6 +11,7 @@ tags:
 
 
 paths:
+  
   /titles:
     get:
       parameters:
@@ -37,6 +38,8 @@ paths:
       tags:
         - Title
       summary: Get list of all titles
+      description: >
+        Permissions: **any**
       responses:
         '200':
           description: List of titles returned
@@ -68,6 +71,8 @@ paths:
       tags:
         - Title
       summary: Add title
+      description: >
+        Permissions: **admin**, **moderator**
       requestBody:
         description: Add title
         required: true
@@ -88,6 +93,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  
   /titles/{title_id}:
     parameters:
       - name: title_id
@@ -100,32 +106,11 @@ paths:
       tags:
         - Title
       summary: Get title
+      description: >
+        Permissions: **any**
       responses:
         '200':
           description: Title returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Title'
-        '404':
-          description: Title not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        'default':
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    patch:
-      tags:
-        - Title
-      summary: Update title
-      responses:
-        '200':
-          description: Title updated
           content:
             application/json:
               schema:
@@ -146,6 +131,15 @@ paths:
       tags:
         - Title
       summary: Update title
+      requestBody:
+        description: Replace title
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Title'
+      description: >
+        Permissions: **admin**, **moderator**
       responses:
         '200':
           description: Title updated
@@ -169,6 +163,8 @@ paths:
       tags:
         - Title
       summary: Delete title
+      description: >
+        Permissions: **admin**, **moderator**
       responses:
         '204':
           description: Title deleted
@@ -188,6 +184,163 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  
+  /genres:
+    get:
+      parameters:
+      - name: name
+        in: query
+        description: 'Search by name'
+        schema:
+          type: string
+      tags:
+        - Genre
+      summary: Get list of all genres
+      description: >
+        Permissions: **any**
+      responses:
+        '200':
+          description: List of genres returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                    description: number of items
+                  next:
+                    type: string
+                    description: link to the next page of items
+                  previous:
+                    type: string
+                    description: link to the previous page of items
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Genre'
+        'default':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Genre
+      summary: Add Genre
+      description: >
+        Permissions: **admin**, **moderator**
+      requestBody:
+        description: Add Genre
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genre'
+      responses:
+        '201':
+          description: Genre added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /genres/{genre_id}:
+    parameters:
+      - name: genre_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: number
+    get:
+      tags:
+        - Genre
+      summary: Get Genre
+      description: >
+        Permissions: **any**
+      responses:
+        '200':
+          description: Genre returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        '404':
+          description: Title not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Genre
+      requestBody:
+        description: Replace Genre
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genre'
+      summary: Update Genre
+      description: >
+        Permissions: **admin**, **moderator**
+      responses:
+        '200':
+          description: Genre updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        '404':
+          description: Title not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Genre
+      summary: Delete Genre
+      responses:
+        '204':
+          description: Genre deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        '404':
+          description: Genre not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
     
 components:
   schemas:
@@ -214,6 +367,20 @@ components:
         category:
           type: string
           description: slug of Category
+
+    Genre:
+      title: Genre
+      type: object
+      description: Genre
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+          description: unique slug of Genre
 
     Error:
       title: Error
