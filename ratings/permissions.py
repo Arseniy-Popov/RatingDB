@@ -1,7 +1,7 @@
-from rest_framework import permissions
+from rest_framework.permissions import BasePermission, BasePermissionMetaclass
 
 
-class Base(permissions.BasePermission):
+class Base(BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return self.read_list(request, view) or self.read(request, view)
@@ -11,6 +11,21 @@ class Base(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return self.read_obj(request, view, obj) or self.read(request, view)
         return self.edit(request, view, obj)
+
+    def check_condition(self, condition, *args):
+        try:
+            request, view, obj = args
+        except ValueError:
+            request, view = args
+        if condition == "any":
+            return True
+        elif condition == "is_authenticated":
+            return request.user.is_authenticated
+        elif condition == "is_owner":
+            return request.user == obj.author
+        elif hasattr(request.user, condition):
+            return getattr(request.user, condition)
+        return False
 
     def read_list(self, *args):
         return False
@@ -28,22 +43,12 @@ class Base(permissions.BasePermission):
         return False
 
 
-class CheckCondition:
-    def check_condition(self, condition, *args):
-        try:
-            request, view, obj = args
-        except ValueError:
-            request, view = args
-        if condition == "is_owner":
-            return request.user == obj.author
-        elif hasattr(request.user, condition):
-            return getattr(request.user, condition)
-        return False
-
-
-class ReadPermission(CheckCondition):
+class Read(Base):
     def __init__(self, *conditions):
         self.conditions = conditions
+
+    def __call__(self):
+        return BasePermissionMetaclass("Read", ("Base",), {"read": self.read})
 
     def read(self, *args):
         return any(
@@ -51,9 +56,12 @@ class ReadPermission(CheckCondition):
         )
 
 
-class WritePermission(CheckCondition):
+class Write(Base):
     def __init__(self, *conditions):
         self.conditions = conditions
+
+    def __call__(self):
+        return BasePermissionMetaclass("Write", ("Base",), {"write": self.write})
 
     def write(self, *args):
         return any(
@@ -61,7 +69,7 @@ class WritePermission(CheckCondition):
         )
 
 
-class EditPermission(CheckCondition):
+class Edit(Base):
     def __init__(self, *conditions):
         self.conditions = conditions
 
