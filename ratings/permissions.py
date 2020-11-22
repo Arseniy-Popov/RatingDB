@@ -27,6 +27,11 @@ class Base(BasePermission):
             return getattr(request.user, condition)
         return False
 
+    def check_conditions(self, *args):
+        return any(
+            self.check_condition(condition, *args) for condition in self.conditions
+        )
+
     def read_list(self, *args):
         return False
 
@@ -43,13 +48,11 @@ class Base(BasePermission):
         return False
 
 
+class PermissionMetaclass:
+    def __call__(self, *conditions):
+        
+
 class Read(Base):
-    def __init__(self, *conditions):
-        self.conditions = conditions
-
-    def __call__(self):
-        return BasePermissionMetaclass("Read", ("Base",), {"read": self.read})
-
     def read(self, *args):
         return any(
             self.check_condition(condition, *args) for condition in self.conditions
