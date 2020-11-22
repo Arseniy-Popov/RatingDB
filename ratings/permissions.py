@@ -48,35 +48,42 @@ class Base(BasePermission):
         return False
 
 
-class PermissionMetaclass:
+class DerivedMetaclass(Base.__class__, type):
+    pass
+
+
+class PermissionMetaclass(type):
     def __call__(self, *conditions):
-        
+        return DerivedMetaclass(
+            f"{self.__name__}Inner",
+            ("Base",),
+            {key: Base.check_conditions for key in self.__dict__ if key[0] != "_"},
+        )
 
-class Read(Base):
+
+class Read(metaclass=PermissionMetaclass):
     def read(self, *args):
-        return any(
-            self.check_condition(condition, *args) for condition in self.conditions
-        )
+        pass
 
 
-class Write(Base):
-    def __init__(self, *conditions):
-        self.conditions = conditions
+# class Write(Base):
+#     def __init__(self, *conditions):
+#         self.conditions = conditions
 
-    def __call__(self):
-        return BasePermissionMetaclass("Write", ("Base",), {"write": self.write})
+#     def __call__(self):
+#         return BasePermissionMetaclass("Write", ("Base",), {"write": self.write})
 
-    def write(self, *args):
-        return any(
-            self.check_condition(condition, *args) for condition in self.conditions
-        )
+#     def write(self, *args):
+#         return any(
+#             self.check_condition(condition, *args) for condition in self.conditions
+#         )
 
 
-class Edit(Base):
-    def __init__(self, *conditions):
-        self.conditions = conditions
+# class Edit(Base):
+#     def __init__(self, *conditions):
+#         self.conditions = conditions
 
-    def edit(self, *args):
-        return any(
-            self.check_condition(condition, *args) for condition in self.conditions
-        )
+#     def edit(self, *args):
+#         return any(
+#             self.check_condition(condition, *args) for condition in self.conditions
+#         )

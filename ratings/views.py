@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .filters import TitleFilter
 from .models import Category, Genre, Title, Review, Comment
-from .permissions import Edit, Read, Write
+from .permissions import Read
 from .serializers import (
     CategorySerializer,
     GenreSerializer,
@@ -37,7 +37,7 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    permission_classes = [Write("is_admin")() | Read("any")()]
+    permission_classes = [Read("any")]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
