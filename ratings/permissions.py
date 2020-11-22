@@ -1,7 +1,7 @@
-from rest_framework.permissions import BasePermission, BasePermissionMetaclass
+from rest_framework import permissions
 
 
-class Base(BasePermission):
+class Base(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return self.read_list(request, view) or self.read(request, view)
@@ -48,42 +48,22 @@ class Base(BasePermission):
         return False
 
 
-class DerivedMetaclass(Base.__class__, type):
-    pass
-
-
 class PermissionMetaclass(type):
     def __call__(self, *conditions):
-        return DerivedMetaclass(
+        return type(permissions.BasePermission)(
             f"{self.__name__}Inner",
-            ("Base",),
-            {key: Base.check_conditions for key in self.__dict__ if key[0] != "_"},
+            (Base,),
+            {self.action: Base.check_conditions, "conditions": conditions},
         )
 
 
 class Read(metaclass=PermissionMetaclass):
-    def read(self, *args):
-        pass
+    action = "read"
 
 
-# class Write(Base):
-#     def __init__(self, *conditions):
-#         self.conditions = conditions
-
-#     def __call__(self):
-#         return BasePermissionMetaclass("Write", ("Base",), {"write": self.write})
-
-#     def write(self, *args):
-#         return any(
-#             self.check_condition(condition, *args) for condition in self.conditions
-#         )
+class Write(metaclass=PermissionMetaclass):
+    action = "write"
 
 
-# class Edit(Base):
-#     def __init__(self, *conditions):
-#         self.conditions = conditions
-
-#     def edit(self, *args):
-#         return any(
-#             self.check_condition(condition, *args) for condition in self.conditions
-#         )
+class Edit(metaclass=PermissionMetaclass):
+    action = "edit"
