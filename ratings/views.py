@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .filters import TitleFilter
 from .models import Category, Genre, Title, Review, Comment
-from .permissions import Read, Write
+from .permissions import List, Create
 from .serializers import (
     CategorySerializer,
     GenreSerializer,
@@ -21,7 +21,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = "slug"
-    # permission_classes = [SuperWrite | AdminWrite | SuperEdit | AdminEdit | AnyRead]
+    # permission_classes = [
+    #     Write("is_admin", "is_moderator")
+    #     | Edit("is_admin", "is_moderator")
+    #     | Read("any")
+    # ]
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
 
@@ -30,14 +34,21 @@ class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = "slug"
-    # permission_classes = [SuperWrite | AdminWrite | SuperEdit | AdminEdit | AnyRead]
+    permission_classes = [
+        Create("is_admin")        
+        | List("any")
+    ]
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    permission_classes = [Read("any") | Write("is_admin")]
+    # permission_classes = [
+    #     Write("is_admin", "is_moderator")
+    #     | Edit("is_admin", "is_moderator")
+    #     | Read("any")
+    # ]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
@@ -80,7 +91,9 @@ class ReviewViewSet(NestedResourceMixin, viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     # permission_classes = [
-    #     AdminEdit | ModeratorEdit | OwnerEdit | AuthenticatedWrite | AnyRead
+    #     Write("is_authenticated")
+    #     | Edit("is_owner")
+    #     | Read("any")
     # ]
     _parent_object, _parent_field, _parent_url_id = Title, "title", "title_id"
 
