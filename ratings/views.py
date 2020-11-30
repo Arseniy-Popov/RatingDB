@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .filters import TitleFilter
 from .models import Category, Genre, Title, Review, Comment
-from .permissions import List, Create
+from .permissions import List, Create, IsAdmin, IsAuthenticated, IsModerator
 from .serializers import (
     CategorySerializer,
     GenreSerializer,
@@ -34,10 +34,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = "slug"
-    permission_classes = [
-        Create("is_admin")        
-        | List("any")
-    ]
+    permission_classes = [List(IsAdmin & IsAuthenticated) | Create(IsAdmin)]
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
 

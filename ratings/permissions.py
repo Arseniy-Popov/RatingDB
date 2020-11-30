@@ -1,67 +1,22 @@
+from __future__ import annotations
+
 from rest_framework import permissions
 
 
 class Base(permissions.BasePermission):
     def has_permission(self, request, view):
-        return self._check_conditions(request, view) and view.action == self.action
-        # if request.method in permissions.SAFE_METHODS:
-        #     return self._read(request, view)
-        # return self._write(request, view)
+        return self.condition.is_true(request, view) and view.action == self.action
 
     def has_object_permission(self, request, view, obj):
-        return self._check_conditions(request, view, obj) and view.action == self.action
-        # if request.method in permissions.SAFE_METHODS:
-        #     return self._read(request, view)
-        # return self._edit(request, view, obj)
-
-    def _check_conditions(self, *args):
-        return any(
-            self._check_condition(condition, *args) for condition in self.conditions
-        )
-        
-    def _check_condition(self, condition, *args):
-        try:
-            request, view, obj = args
-        except ValueError:
-            request, view = args
-            obj = None
-        if condition == "any":
-            return True
-        elif condition == "is_authenticated":
-            return request.user.is_authenticated
-        elif condition == "is_owner":
-            return False if not obj else request.user == obj.author
-        elif hasattr(request.user, condition):
-            return getattr(request.user, condition)
-        return False
+        return self.condition.is_true(request, view, obj) and view.action == self.action
 
 
 class PermissionMetaclass(type):
-    """
-    Classes of this metaclass are called with an arbitrary number of
-    conditions. If any of the conditions is satisfied, the action is 
-    permitted (conditions are treated as if separated by `or` statements).
-    
-    If a passed condition doesn't match any of the following conditions,
-    "any", "is_authenticated", and "is_owner", the User class object is
-    checked to posses a boolean field with that name. When called, the
-    class returns a subclass of rest_framework.permissions.BasePermission.
-    
-    To-Do: add boolean operators to conditions.
-    
-    Example usage:
-    permission_classes = [
-        Write("is_authenticated")
-        | Edit("is_owner", "is_moderator")
-        | Read("any")
-    ]
-    """
-    
-    def __call__(self, *conditions):
+    def __call__(self, condition: ConditionMetaclass) -> permissions.BasePermission:
         return type(Base)(
             f"{self.__name__}Inner",
             (Base,),
-            {"action": self.action, "conditions": conditions},
+            {"action": self.action, "condition": condition},
         )
 
 
@@ -73,5 +28,81 @@ class Create(metaclass=PermissionMetaclass):
     action = "create"
 
 
-# class Edit(metaclass=PermissionMetaclass):
-#     action = "edit"
+class Edit(metaclass=PermissionMetaclass):
+    action = "edit"
+
+
+class OperatorMixin:
+    def __or__(self, other):
+        return OperandHolder(OR, self, other)
+
+    def __and__(self, other):
+        return OperandHolder(AND, self, other)
+
+
+class OR:
+    def __init__(self, operand_1, operand_2):
+        self.operand_1 = operand_1
+        self.operand_2 = operand_2
+
+    def is_true(self, *args, **kwargs):
+        return self.operand_1.is_true(*args, **kwargs) or self.operand_2.is_true(
+            *args, **kwargs
+        )
+
+
+class AND:
+    def __init__(self, operand_1, operand_2):
+        self.operand_1 = operand_1
+        self.operand_2 = operand_2
+
+    def is_true(self, *args, **kwargs):
+        return self.operand_1.is_true(*args, **kwargs) and self.operand_2.is_true(
+            *args, **kwargs
+        )
+
+
+class OperandHolder(OperatorMixin):
+    def __init__(self, operator, operand_1, operand_2):
+        self.operator = operator
+        self.operand_1 = operand_1
+        self.operand_2 = operand_2
+
+    def is_true(self, *args, **kwargs):
+        return self.operator(self.operand_1, self.operand_2).is_true(*args, **kwargs)
+
+
+class ConditionMetaclass(OperatorMixin, type):
+    pass
+
+
+class BaseCondition(metaclass=ConditionMetaclass):
+    @staticmethod
+    def _resolve_args(*args, **kwargs):
+        try:
+            request, view, obj = args
+        except ValueError:
+            request, view = args
+            obj = None
+        return request, view, obj
+
+
+class IsAuthenticated(BaseCondition):
+    @staticmethod
+    def is_true(*args, **kwargs):
+        request, view, obj = self._resolve_args(*args, **kwargs)
+        return request.user.is_authenticated
+
+
+class IsAdmin(BaseCondition):
+    @staticmethod
+    def is_true(*args, **kwargs):
+        request, view, obj = self._resolve_args(*args, **kwargs)
+        return request.user.is_admin
+
+
+class IsModerator(BaseCondition):
+    @staticmethod
+    def is_true(*args, **kwargs):
+        request, view, obj = self._resolve_args(*args, **kwargs)
+        return request.user.is_moderator
