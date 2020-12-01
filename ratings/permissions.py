@@ -5,10 +5,18 @@ from rest_framework import permissions
 
 class Base(permissions.BasePermission):
     def has_permission(self, request, view):
-        return self.condition.is_true(request, view) and view.action == self.action
+        print("has permission", request, view, view.action)
+        return (
+            self.condition.is_true(request, view)
+            and view.action in self.permitted_actions
+        )
 
     def has_object_permission(self, request, view, obj):
-        return self.condition.is_true(request, view, obj) and view.action == self.action
+        print(request, view, obj)
+        return (
+            self.condition.is_true(request, view, obj)
+            and view.action in self.permitted_actions
+        )
 
 
 class PermissionMetaclass(type):
@@ -16,20 +24,36 @@ class PermissionMetaclass(type):
         return type(Base)(
             f"{self.__name__}Inner",
             (Base,),
-            {"action": self.action, "condition": condition},
+            {"permitted_actions": self.permitted_actions, "condition": condition},
         )
 
 
 class List(metaclass=PermissionMetaclass):
-    action = "list"
+    permitted_actions = ["list"]
+
+
+class Retrieve(metaclass=PermissionMetaclass):
+    permitted_actions = ["retrieve"]
 
 
 class Create(metaclass=PermissionMetaclass):
-    action = "create"
+    permitted_actions = ["create"]
 
 
 class Edit(metaclass=PermissionMetaclass):
-    action = "edit"
+    permitted_actions = ["edit"]
+
+
+class Delete(metaclass=PermissionMetaclass):
+    permitted_actions = ["delete"]
+
+
+class Read(metaclass=PermissionMetaclass):
+    permitted_actions = ["list", "retrieve"]
+
+
+class All(metaclass=PermissionMetaclass):
+    permitted_actions = ["list", "retrieve", "create", "edit", "delete"]
 
 
 class OperatorMixin:
@@ -87,22 +111,34 @@ class BaseCondition(metaclass=ConditionMetaclass):
         return request, view, obj
 
 
-class IsAuthenticated(BaseCondition):
-    @staticmethod
-    def is_true(*args, **kwargs):
-        request, view, obj = self._resolve_args(*args, **kwargs)
-        return request.user.is_authenticated
+class BaseRoleCondition(BaseCondition):
+    @classmethod
+    def is_true(cls, *args, **kwargs):
+        request, view, obj = cls._resolve_args(*args, **kwargs)
+        return getattr(request.user, cls.role)
 
 
-class IsAdmin(BaseCondition):
-    @staticmethod
-    def is_true(*args, **kwargs):
-        request, view, obj = self._resolve_args(*args, **kwargs)
-        return request.user.is_admin
+class IsAny(BaseCondition):
+    @classmethod
+    def is_true(cls, *args, **kwargs):
+        return True
 
 
-class IsModerator(BaseCondition):
-    @staticmethod
-    def is_true(*args, **kwargs):
-        request, view, obj = self._resolve_args(*args, **kwargs)
-        return request.user.is_moderator
+class IsAuthenticated(BaseRoleCondition):
+    role = "is_authenticated"
+
+
+class IsAdmin(BaseRoleCondition):
+    role = "is_admin"
+
+
+class IsModerator(BaseRoleCondition):
+    role = "is_moderator"
+
+
+class IsOwner(BaseCondition):
+    @classmethod
+    def is_true(cls, *args, **kwargs):
+        print(args)
+        request, view, obj = cls._resolve_args(*args, **kwargs)
+        return request.user == obj.author
