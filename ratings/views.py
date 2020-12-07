@@ -9,14 +9,16 @@ from .models import Category, Genre, Title, Review, Comment
 from .permissions import (
     List,
     Create,
-    Edit, 
+    Update,
+    Delete,
     Retrieve,
     Read,
     IsAny,
-    All,
+    Any,
     IsAdmin,
     IsAuthenticated,
     IsModerator,
+    IsStaff,
     IsOwner,
 )
 from .serializers import (
@@ -33,11 +35,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = "slug"
-    # permission_classes = [
-    #     Write("is_admin", "is_moderator")
-    #     | Edit("is_admin", "is_moderator")
-    #     | Read("any")
-    # ]
+    permission_classes = [Any(IsAdmin) | Read(IsAny)]
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
 
@@ -46,18 +44,14 @@ class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = "slug"
-    permission_classes = [Read(IsAny) | Edit(IsOwner)]
+    permission_classes = [Any(IsStaff) | Read(IsAny)]
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    # permission_classes = [
-    #     Write("is_admin", "is_moderator")
-    #     | Edit("is_admin", "is_moderator")
-    #     | Read("any")
-    # ]
+    permission_classes = [Delete(IsAdmin) | Read(IsAny)]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
@@ -99,11 +93,9 @@ class NestedResourceMixin:
 class ReviewViewSet(NestedResourceMixin, viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    # permission_classes = [
-    #     Write("is_authenticated")
-    #     | Edit("is_owner")
-    #     | Read("any")
-    # ]
+    permission_classes = [
+        Create(IsAuthenticated) | Update(IsOwner) | Delete(IsStaff) | Read(IsAny)
+    ]
     _parent_object, _parent_field, _parent_url_id = Title, "title", "title_id"
 
     def perform_create(self, serializer):
@@ -124,9 +116,9 @@ class ReviewViewSet(NestedResourceMixin, viewsets.ModelViewSet):
 class CommentViewSet(NestedResourceMixin, viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    # permission_classes = [
-    #     AdminEdit | ModeratorEdit | OwnerEdit | AuthenticatedWrite | AnyRead
-    # ]
+    permission_classes = [
+        Create(IsAuthenticated) | Update(IsOwner) | Delete(IsStaff) | Read(IsAny)
+    ]
     _parent_object, _parent_field, _parent_url_id = Review, "review", "review_id"
 
     def _serializer_save_fields(self):
