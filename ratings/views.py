@@ -51,7 +51,7 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    permission_classes = [Delete(IsAdmin) | Read(IsAny)]
+    permission_classes = [Any(IsAdmin) | Read(IsAny)]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 

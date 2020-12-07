@@ -41,7 +41,7 @@ class Update(metaclass=PermissionMetaclass):
 
 
 class Delete(metaclass=PermissionMetaclass):
-    permitted_actions = ["delete"]
+    permitted_actions = ["destroy"]
 
 
 class Read(metaclass=PermissionMetaclass):
@@ -49,7 +49,14 @@ class Read(metaclass=PermissionMetaclass):
 
 
 class Any(metaclass=PermissionMetaclass):
-    permitted_actions = ["list", "retrieve", "create", "edit", "delete"]
+    permitted_actions = [
+        "list",
+        "retrieve",
+        "create",
+        "update",
+        "partial_update",
+        "destroy",
+    ]
 
 
 class OperatorMixin:
