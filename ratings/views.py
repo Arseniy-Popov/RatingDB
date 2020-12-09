@@ -90,22 +90,28 @@ class NestedResourceMixin:
         )
 
 
-class ReviewViewSet(NestedResourceMixin, viewsets.ModelViewSet):
+class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [
-        Create(IsAuthenticated) | Update(IsOwner) | Delete(IsStaff) | Read(IsAny)
+        Create(IsAuthenticated)
+        | Update(IsOwner)
+        | Delete(IsStaff | IsOwner)
+        | Read(IsAny)
     ]
-    _parent_object, _parent_field, _parent_url_id = Title, "title", "title_id"
+
+    def get_queryset(self):
+        title = self._get_title()
+        return super().get_queryset().filter(**{"title": title})
 
     def perform_create(self, serializer):
-        self._pre_perform_create()
-        super().perform_create(serializer)
+        self._check_single_review()
+        serializer.save(**{"title": self._get_title(), "author": self.request.user})
 
-    def _serializer_save_fields(self):
-        return {"author": self.request.user}
+    def _get_title(self):
+        return get_object_or_404(Title, id=self.kwargs["title_id"])
 
-    def _pre_perform_create(self):
+    def _check_single_review(self):
         title = get_object_or_404(Title, id=self.kwargs["title_id"])
         if Review.objects.filter(author=self.request.user, title=title).exists():
             raise serializers.ValidationError(
@@ -113,13 +119,22 @@ class ReviewViewSet(NestedResourceMixin, viewsets.ModelViewSet):
             )
 
 
-class CommentViewSet(NestedResourceMixin, viewsets.ModelViewSet):
+class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [
-        Create(IsAuthenticated) | Update(IsOwner) | Delete(IsStaff) | Read(IsAny)
+        Create(IsAuthenticated)
+        | Update(IsOwner)
+        | Delete(IsStaff | IsOwner)
+        | Read(IsAny)
     ]
-    _parent_object, _parent_field, _parent_url_id = Review, "review", "review_id"
 
-    def _serializer_save_fields(self):
-        return {"author": self.request.user}
+    def get_queryset(self):
+        review = self._get_review()
+        return super().get_queryset().filter(**{"review": review})
+
+    def perform_create(self, serializer):
+        serializer.save(**{"review": self._get_review(), "author": self.request.user})
+
+    def _get_review(self):
+        return get_object_or_404(Review, id=self.kwargs["review_id"])

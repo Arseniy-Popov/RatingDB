@@ -153,4 +153,6 @@ class IsOwner(BaseCondition):
     @classmethod
     def is_true(cls, *args, **kwargs):
         request, view, obj = cls._resolve_args(*args, **kwargs)
+        if not obj:
+            return True
         return request.user == obj.author if hasattr(request, "user") else False
