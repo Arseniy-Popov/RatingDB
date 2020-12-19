@@ -13,12 +13,10 @@ from ratings.roles import (
 )
 
 
-class UserViewSet(
-    viewsets.GenericViewSet,
+class RetrieveCreateUser(
+    generics.GenericAPIView,
     mixins.CreateModelMixin,
-    # mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
-    # mixins.DestroyModelMixin,
 ):
     queryset = User.objects.all()
     serializer_class = UserSerializerRead
@@ -28,6 +26,9 @@ class UserViewSet(
         if self.request.method in permissions.SAFE_METHODS:
             return UserSerializerRead
         return UserSerializerWrite
+
+    def get_object(self):
+        return self.request.user
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
