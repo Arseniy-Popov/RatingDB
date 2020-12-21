@@ -5,5 +5,5 @@ from .views import RetrieveCreateUser
 
 
 urlpatterns = [
-    path('', RetrieveCreateUser.as_view()),
+    path("", RetrieveCreateUser.as_view({"get": "retrieve", "post": "create"}))
 ]

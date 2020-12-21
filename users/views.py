@@ -1,4 +1,5 @@
 from rest_framework import viewsets, generics, mixins, permissions
+from rest_framework.response import Response
 
 from .models import User
 from .serializers import UserSerializerRead, UserSerializerWrite
@@ -14,9 +15,7 @@ from ratings.roles import (
 
 
 class RetrieveCreateUser(
-    generics.GenericAPIView,
-    mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin
 ):
     queryset = User.objects.all()
     serializer_class = UserSerializerRead
@@ -36,3 +35,8 @@ class RetrieveCreateUser(
             User.objects.get(username=response.data["username"])
         ).data
         return response
+
+    def retrieve(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response("Unauthenticated")
+        return super().retrieve(request, *args, **kwargs)
