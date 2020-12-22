@@ -2,16 +2,15 @@ openapi: 3.0.2
 info:
   title: 'RatingDB API'
   version: ''
-  description: ''
- 
-tags:
-  - name: Category
-  - name: Genre
-  - name: Title
+  description: |
+    Permissions are determined with respect to the following roles:\
+    **Admin, Moderator, Authenticated, Author, Any**
 
+security:
+  - BasicAuth: []
 
 paths:
-  
+
   /titles:
     get:
       parameters:
@@ -36,10 +35,10 @@ paths:
         schema:
           type: number
       tags:
-        - Title
-      summary: Get list of all titles
+        - Titles
+      summary: Get all Titles
       description: >
-        Permissions: **any**
+        Permissions: **Any**
       responses:
         '200':
           description: List of titles returned
@@ -69,10 +68,10 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       tags:
-        - Title
-      summary: Add title
+        - Titles
+      summary: Add Title
       description: >
-        Permissions: **admin**, **moderator**
+        Permissions: **Admin**, **Moderator**
       requestBody:
         description: Add title
         required: true
@@ -104,10 +103,10 @@ paths:
           type: number
     get:
       tags:
-        - Title
-      summary: Get title
+        - Titles
+      summary: Get Title
       description: >
-        Permissions: **any**
+        Permissions: **Any**
       responses:
         '200':
           description: Title returned
@@ -129,17 +128,49 @@ paths:
                 $ref: '#/components/schemas/Error'
     put:
       tags:
-        - Title
-      summary: Update title
+        - Titles
+      summary: Replace Title
       requestBody:
-        description: Replace title
+        description: Replace Title
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Title'
       description: >
-        Permissions: **admin**, **moderator**
+        Permissions: **Admin**, **Moderator**
+      responses:
+        '200':
+          description: Title updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Title'
+        '404':
+          description: Title not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - Titles
+      summary: Partially update Title
+      requestBody:
+        description: Partially update Title
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Title'
+      description: >
+        Permissions: **Admin**, **Moderator**
       responses:
         '200':
           description: Title updated
@@ -161,10 +192,10 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       tags:
-        - Title
-      summary: Delete title
+        - Titles
+      summary: Delete Title
       description: >
-        Permissions: **admin**, **moderator**
+        Permissions: **Admin**, **Moderator**
       responses:
         '204':
           description: Title deleted
@@ -184,23 +215,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  
+
   /genres:
     get:
       parameters:
-      - name: name
+      - name: search
         in: query
-        description: 'Search by name'
+        description: 'Search by name of Genre'
         schema:
           type: string
       tags:
-        - Genre
-      summary: Get list of all genres
+        - Genres
+      summary: Get all Genres
       description: >
-        Permissions: **any**
+        Permissions: **Any**
       responses:
         '200':
-          description: List of genres returned
+          description: List of titles returned
           content:
             application/json:
               schema:
@@ -227,12 +258,12 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       tags:
-        - Genre
+        - Genres
       summary: Add Genre
       description: >
-        Permissions: **admin**, **moderator**
+        Permissions: **Admin**, **Moderator**
       requestBody:
-        description: Add Genre
+        description: Add title
         required: true
         content:
           application/json:
@@ -251,7 +282,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-                
+  
   /genres/{genre_id}:
     parameters:
       - name: genre_id
@@ -262,10 +293,10 @@ paths:
           type: number
     get:
       tags:
-        - Genre
+        - Genres
       summary: Get Genre
       description: >
-        Permissions: **any**
+        Permissions: **Any**
       responses:
         '200':
           description: Genre returned
@@ -274,7 +305,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Genre'
         '404':
-          description: Title not found 
+          description: Genre not found 
           content:
             application/json:
               schema:
@@ -287,7 +318,8 @@ paths:
                 $ref: '#/components/schemas/Error'
     put:
       tags:
-        - Genre
+        - Genres
+      summary: Replace Genre
       requestBody:
         description: Replace Genre
         required: true
@@ -295,9 +327,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Genre'
-      summary: Update Genre
       description: >
-        Permissions: **admin**, **moderator**
+        Permissions: **Admin**, **Moderator**
       responses:
         '200':
           description: Genre updated
@@ -306,7 +337,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/Genre'
         '404':
-          description: Title not found 
+          description: Genre not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - Genres
+      summary: Partially update Genre
+      requestBody:
+        description: Partially update Genre
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genre'
+      description: >
+        Permissions: **Admin**, **Moderator**
+      responses:
+        '200':
+          description: Genre updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        '404':
+          description: Genre not found 
           content:
             application/json:
               schema:
@@ -319,8 +382,10 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       tags:
-        - Genre
+        - Genres
       summary: Delete Genre
+      description: >
+        Permissions: **Admin**, **Moderator**
       responses:
         '204':
           description: Genre deleted
@@ -390,4 +455,9 @@ components:
         error:
           type: string
           description: error details
+  
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
       
