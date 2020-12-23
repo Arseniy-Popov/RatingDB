@@ -30,7 +30,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     """
-    E.g. Star Wars IV, 1977.
+    E.g. Star Wars IV.
     """
 
     name = models.CharField(max_length=200)

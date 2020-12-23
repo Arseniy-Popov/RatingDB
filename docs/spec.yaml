@@ -33,12 +33,13 @@ paths:
         in: query
         description: 'Filter by year'
         schema:
-          type: number
+          type: integer
       tags:
         - Titles
       summary: Get all Titles
       description: >
         Permissions: **Any**
+      security: [] 
       responses:
         '200':
           description: List of titles returned
@@ -48,7 +49,7 @@ paths:
                 type: object
                 properties:
                   count:
-                    type: number
+                    type: integer
                     description: number of items
                   next:
                     type: string
@@ -100,13 +101,14 @@ paths:
         required: true
         description: ''
         schema:
-          type: number
+          type: integer
     get:
       tags:
         - Titles
       summary: Get Title
       description: >
         Permissions: **Any**
+      security: []
       responses:
         '200':
           description: Title returned
@@ -229,6 +231,7 @@ paths:
       summary: Get all Genres
       description: >
         Permissions: **Any**
+      security: []
       responses:
         '200':
           description: List of titles returned
@@ -238,7 +241,7 @@ paths:
                 type: object
                 properties:
                   count:
-                    type: number
+                    type: integer
                     description: number of items
                   next:
                     type: string
@@ -290,13 +293,14 @@ paths:
         required: true
         description: ''
         schema:
-          type: number
+          type: integer
     get:
       tags:
         - Genres
       summary: Get Genre
       description: >
         Permissions: **Any**
+      security: []
       responses:
         '200':
           description: Genre returned
@@ -406,6 +410,601 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /categories:
+    get:
+      parameters:
+      - name: search
+        in: query
+        description: 'Search by name of Category'
+        schema:
+          type: string
+      tags:
+        - Categories
+      summary: Get all Categories
+      description: >
+        Permissions: **Any**
+      security: []
+      responses:
+        '200':
+          description: List of titles returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: number of items
+                  next:
+                    type: string
+                    description: link to the next page of items
+                  previous:
+                    type: string
+                    description: link to the previous page of items
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+        'default':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Categories
+      summary: Add Category
+      description: >
+        Permissions: **Admin**, **Moderator**
+      requestBody:
+        description: Add title
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '201':
+          description: Category added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /categories/{category_id}:
+    parameters:
+      - name: category_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    get:
+      tags:
+        - Categories
+      summary: Get Category
+      description: >
+        Permissions: **Any**
+      security: []
+      responses:
+        '200':
+          description: Category returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Category not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Categories
+      summary: Replace Category
+      requestBody:
+        description: Replace Category
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      description: >
+        Permissions: **Admin**, **Moderator**
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Category not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - Categories
+      summary: Partially update Category
+      requestBody:
+        description: Partially update Category
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      description: >
+        Permissions: **Admin**, **Moderator**
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Category not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Categories
+      summary: Delete Category
+      description: >
+        Permissions: **Admin**, **Moderator**
+      responses:
+        '204':
+          description: Category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Category not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /titles/{title_id}/reviews:
+    parameters:
+    - name: title_id
+      in: path
+      required: true
+      description: ''
+      schema:
+        type: integer
+    get:
+      tags:
+        - Reviews
+      summary: Get all Reviews
+      description: >
+        Permissions: **Any**
+      security: []
+      responses:
+        '200':
+          description: List of Reviews returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: number of items
+                  next:
+                    type: string
+                    description: link to the next page of items
+                  previous:
+                    type: string
+                    description: link to the previous page of items
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ReviewRead'
+        'default':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Reviews
+      summary: Add Review
+      description: |
+        Permissions: **Authenticated** \
+        Maximum of one Review per Title. 
+      requestBody:
+        description: Add title
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewWrite'
+      responses:
+        '201':
+          description: Review added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewRead'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /titles/{title_id}/reviews/{review_id}:
+    parameters:
+      - name: title_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+      - name: review_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    get:
+      tags:
+        - Reviews
+      summary: Get Review
+      description: >
+        Permissions: **Any**
+      security: []
+      responses:
+        '200':
+          description: Review returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewRead'
+        '404':
+          description: Review not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Reviews
+      summary: Replace Review
+      requestBody:
+        description: Replace Review
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewWrite'
+      description: >
+        Permissions: **Author**
+      responses:
+        '200':
+          description: Review updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewRead'
+        '404':
+          description: Review not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - Reviews
+      summary: Partially update Review
+      requestBody:
+        description: Partially update Review
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewWrite'
+      description: >
+        Permissions: **Author**
+      responses:
+        '200':
+          description: Review updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewRead'
+        '404':
+          description: Review not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Reviews
+      summary: Delete Review
+      description: >
+        Permissions: **Author**, **Admin**, **Moderator**
+      responses:
+        '204':
+          description: Review deleted
+        '404':
+          description: Review not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /titles/{title_id}/reviews/{review_id}/comments:
+    parameters:
+    - name: title_id
+      in: path
+      required: true
+      description: ''
+      schema:
+        type: integer
+    - name: review_id
+      in: path
+      required: true
+      description: ''
+      schema:
+        type: integer
+    get:
+      tags:
+        - Comments
+      summary: Get all Comments
+      description: >
+        Permissions: **Any**
+      security: []
+      responses:
+        '200':
+          description: List of Comments returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: number of items
+                  next:
+                    type: string
+                    description: link to the next page of items
+                  previous:
+                    type: string
+                    description: link to the previous page of items
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+        'default':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Comments
+      summary: Add Comment
+      description: |
+        Permissions: **Authenticated**
+      requestBody:
+        description: Add title
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      responses:
+        '201':
+          description: Comment added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /titles/{title_id}/reviews/{review_id}/comments/{comment_id}:
+    parameters:
+      - name: title_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+      - name: review_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+      - name: comment_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    get:
+      tags:
+        - Comments
+      summary: Get Comment
+      description: >
+        Permissions: **Any**
+      security: []
+      responses:
+        '200':
+          description: Comment returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: Comment not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Comments
+      summary: Replace Comment
+      requestBody:
+        description: Replace Comment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      description: >
+        Permissions: **Author**
+      responses:
+        '200':
+          description: Comment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: Comment not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - Comments
+      summary: Partially update Comment
+      requestBody:
+        description: Partially update Comment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      description: >
+        Permissions: **Author**
+      responses:
+        '200':
+          description: Comment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: Comment not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Comments
+      summary: Delete Comment
+      description: >
+        Permissions: **Author**, **Admin**, **Moderator**
+      responses:
+        '204':
+          description: Comment deleted
+        '404':
+          description: Comment not found 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
     
 components:
   schemas:
@@ -416,11 +1015,12 @@ components:
       description: Title
       required:
         - name
+        - year
       properties:
         name:
           type: string
         year:
-          type: number
+          type: integer
         description:
           type: string
         genres:
@@ -446,6 +1046,69 @@ components:
         slug:
           type: string
           description: unique slug of Genre
+
+    Category:
+      title: Category
+      type: object
+      description: Category
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+          description: unique slug of Category
+
+    ReviewRead:
+      title: Review (Read)
+      type: object
+      description: Review (Read)
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        author:
+          type: string
+          description: usename of author
+        score:
+          type: integer
+        date:
+          type: string
+  
+    ReviewWrite:
+      title: Review (Write)
+      type: object
+      description: Review (Write)
+      required:
+        - text
+        - score
+      properties:
+        text:
+          type: string
+        score:
+          type: integer
+
+    Comment:
+      title: Comment
+      type: object
+      description: Comment
+      required:
+        - text
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        text:
+          type: string
+        author:
+          type: integer
+          readOnly: true
+        date:
+          type: string
+          readOnly: true
 
     Error:
       title: Error
