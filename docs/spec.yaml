@@ -11,6 +11,55 @@ security:
 
 paths:
 
+  /user:
+    get:
+      tags:
+        - User
+      summary: Get current User
+      description: >
+        Permissions: **Authenticated**
+      responses:
+        '200':
+          description: Current User data returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        'default':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - User
+      summary: Register new User
+      description: >
+        Permissions: **Any**
+      security: [] 
+      requestBody:
+        description: Register new User
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        'default':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+
   /titles:
     get:
       parameters:
@@ -994,6 +1043,31 @@ components:
         error:
           type: string
           description: error details
+  
+    User:
+      title: User
+      type: object
+      description: User
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+          readOnly: true
   
   securitySchemes:
     BasicAuth:
