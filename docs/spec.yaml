@@ -116,12 +116,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Title'
-        '404':
-          description: Title not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -148,12 +142,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Title'
-        '404':
-          description: Title not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -180,12 +168,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Title'
-        '404':
-          description: Title not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -205,12 +187,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Title'
-        '404':
-          description: Title not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -308,12 +284,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Genre'
-        '404':
-          description: Genre not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -340,12 +310,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Genre'
-        '404':
-          description: Genre not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -372,12 +336,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Genre'
-        '404':
-          description: Genre not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -397,12 +355,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Genre'
-        '404':
-          description: Genre not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -500,12 +452,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
-        '404':
-          description: Category not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -532,12 +478,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
-        '404':
-          description: Category not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -564,12 +504,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
-        '404':
-          description: Category not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -589,12 +523,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
-        '404':
-          description: Category not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -637,7 +565,7 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ReviewRead'
+                      $ref: '#/components/schemas/Review'
         'default':
           description: Unexpected error.
           content:
@@ -657,14 +585,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReviewWrite'
+              $ref: '#/components/schemas/Review'
       responses:
         '201':
           description: Review added
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewRead'
+                $ref: '#/components/schemas/Review'
         'default':
           description: Unexpected error
           content:
@@ -699,13 +627,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewRead'
-        '404':
-          description: Review not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Review'
         'default':
           description: Unexpected error
           content:
@@ -722,7 +644,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReviewWrite'
+              $ref: '#/components/schemas/Review'
       description: >
         Permissions: **Author**
       responses:
@@ -731,13 +653,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewRead'
-        '404':
-          description: Review not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Review'
         'default':
           description: Unexpected error
           content:
@@ -754,7 +670,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReviewWrite'
+              $ref: '#/components/schemas/Review'
       description: >
         Permissions: **Author**
       responses:
@@ -763,13 +679,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewRead'
-        '404':
-          description: Review not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Review'
         'default':
           description: Unexpected error
           content:
@@ -907,12 +817,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
-        '404':
-          description: Comment not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -939,12 +843,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
-        '404':
-          description: Comment not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -971,12 +869,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
-        '404':
-          description: Comment not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -992,12 +884,6 @@ paths:
       responses:
         '204':
           description: Comment deleted
-        '404':
-          description: Comment not found 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         'default':
           description: Unexpected error
           content:
@@ -1061,35 +947,25 @@ components:
           type: string
           description: unique slug of Category
 
-    ReviewRead:
-      title: Review (Read)
+    Review:
+      title: Review
       type: object
-      description: Review (Read)
+      description: Review
       properties:
         id:
           type: integer
+          readOnly: true
         text:
           type: string
         author:
           type: string
           description: usename of author
+          readOnly: true
         score:
           type: integer
         date:
           type: string
-  
-    ReviewWrite:
-      title: Review (Write)
-      type: object
-      description: Review (Write)
-      required:
-        - text
-        - score
-      properties:
-        text:
-          type: string
-        score:
-          type: integer
+          readOnly: true
 
     Comment:
       title: Comment

@@ -19,7 +19,7 @@ class RetrieveCreateUser(
 ):
     queryset = User.objects.all()
     serializer_class = UserSerializerRead
-    permission_classes = [Create(IsAny) | Read(IsAny)]
+    permission_classes = [Create(IsAny) | Read(IsAuthenticated)]
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -30,13 +30,12 @@ class RetrieveCreateUser(
         return self.request.user
 
     def create(self, request, *args, **kwargs):
+        """
+        Use the read serializer to populate the body of a response
+        to a create action.
+        """
         response = super().create(request, *args, **kwargs)
         response.data = UserSerializerRead(
             User.objects.get(username=response.data["username"])
         ).data
         return response
-
-    def retrieve(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response("Unauthenticated")
-        return super().retrieve(request, *args, **kwargs)
