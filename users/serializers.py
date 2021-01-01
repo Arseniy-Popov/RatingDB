@@ -24,6 +24,9 @@ class UserSerializerRead(serializers.ModelSerializer):
         fields = ["username", "first_name", "last_name", "email", "roles"]
 
     def get_roles(self, obj):
+        """
+        Populate `roles` field with list of assigned roles.
+        """
         roles = [IsAdmin, IsModerator]
         return [
             role.__name__

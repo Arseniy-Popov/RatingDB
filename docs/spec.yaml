@@ -311,14 +311,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   
-  /genres/{genre_id}:
+  /genres/{genre_slug}:
     parameters:
-      - name: genre_id
+      - name: genre_slug
         in: path
         required: true
         description: ''
         schema:
-          type: integer
+          type: string
     get:
       tags:
         - Genres
@@ -486,7 +486,7 @@ paths:
         required: true
         description: ''
         schema:
-          type: integer
+          type: string
     get:
       tags:
         - Categories
