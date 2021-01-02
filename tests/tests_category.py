@@ -20,7 +20,7 @@ class TestsCategory(TestsBase):
         )
         response = getattr(self._client(None), method)(path, body)
         assert response.data["count"] == 2
-        assert response.data["results"][1]["slug"] == "series"
+        assert response.data["results"][0]["slug"] == "movie"
 
     def test_category_list_with_search(self):
         """
@@ -97,3 +97,14 @@ class TestsCategory(TestsBase):
         assert response.data["slug"] == "seriess"
         assert not Category.objects.filter(slug="series").exists()
         assert Category.objects.filter(slug="seriess").exists()
+
+    def test_category_delete(self):
+        """
+        DELETE /categories/{category_slug}
+        """
+        path, method, body = ("/api/v1/categories/series/", "delete", None)
+        self._assert_not_allowed_for(
+            path, method, None, [None, self.user_1_plain, self.user_2_moderator]
+        )
+        response = getattr(self._client(self.user_3_admin), method)(path, body)
+        assert not Category.objects.filter(slug="series").exists()

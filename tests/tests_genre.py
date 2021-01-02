@@ -93,3 +93,12 @@ class TestsGenre(TestsBase):
         assert response.data["slug"] == "sci-fii"
         assert not Genre.objects.filter(slug="sci-fi").exists()
         assert Genre.objects.filter(slug="sci-fii").exists()
+
+    def test_genre_delete(self):
+        """
+        DELETE /genres/{genre_slug}
+        """
+        path, method, body = ("/api/v1/genres/sci-fi/", "delete", None)
+        self._assert_not_allowed_for(path, method, None, [None, self.user_1_plain])
+        response = getattr(self._client(self.user_3_admin), method)(path, body)
+        assert not Genre.objects.filter(slug="sci-fi").exists()

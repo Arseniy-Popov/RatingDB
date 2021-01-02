@@ -24,73 +24,91 @@ class TestsTitle(TestsBase):
 
     def test_title_list_with_search(self):
         """
-        GET /titles/?year={year}&genre={genre}&category={category}&name={name}
+        GET /titles/?{parameter}={value}
         """
-        query = "year=
-        path, method, body = "/api/v1/categories/?search=sci-fi", "get", None
+        for parameter, value in (
+            ("year", 1977),
+            ("genre", "sci-fi"),
+            ("category", "movie"),
+            ("name", "Star Wars IV"),
+        ):
+            path, method, body = f"/api/v1/titles/?{parameter}={value}", "get", None
+            response = getattr(self._client(None), method)(path, body)
+            assert response.data["count"] == 1
+            assert response.data["results"][0]["name"] == "Star Wars IV"
+
+    def test_title_retrive(self):
+        """
+        GET /titles/{title_id}
+        """
+        id = Title.objects.get(name="Star Wars IV").id
+        path, method, body = f"/api/v1/titles/{id}/", "get", None
+        self._assert_allowed_for(
+            path,
+            method,
+            body,
+            (None, self.user_1_plain, self.user_2_moderator, self.user_3_admin),
+        )
         response = getattr(self._client(None), method)(path, body)
-        assert response.data["count"] == 1
-        assert response.data["results"][0]["slug"] == "sci-fi"
+        assert response.data["name"] == "Star Wars IV"
 
-    # def test_title_retrive(self):
-    #     """
-    #     GET /titles/{title_slug}
-    #     """
-    #     path, method, body = "/api/v1/titles/sci-fi/", "get", None
-    #     self._assert_allowed_for(
-    #         path,
-    #         method,
-    #         body,
-    #         (None, self.user_1_plain, self.user_2_moderator, self.user_3_admin),
-    #     )
-    #     response = getattr(self._client(None), method)(path, body)
-    #     assert response.data["slug"] == "sci-fi"
+    def test_title_create(self):
+        """
+        POST /titles
+        """
+        path, method, body = (
+            "/api/v1/titles/",
+            "post",
+            {"name": "Star Wars III", "year": 2005, "category": "movie"},
+        )
+        self._assert_allowed_for(
+            path, method, None, [self.user_2_moderator, self.user_3_admin]
+        )
+        self._assert_not_allowed_for(path, method, None, [None, self.user_1_plain])
+        response = getattr(self._client(self.user_3_admin), method)(path, body)
+        assert response.data["name"] == "Star Wars III"
+        assert Title.objects.filter(name="Star Wars III").exists()
 
-    # def test_title_create(self):
-    #     """
-    #     POST /titles
-    #     """
-    #     path, method, body = (
-    #         "/api/v1/titles/",
-    #         "post",
-    #         {"name": "Acion", "slug": "action"},
-    #     )
-    #     self._assert_allowed_for(
-    #         path, method, None, [self.user_2_moderator, self.user_3_admin]
-    #     )
-    #     self._assert_not_allowed_for(path, method, None, [None, self.user_1_plain])
-    #     response = getattr(self._client(self.user_3_admin), method)(path, body)
-    #     assert response.data["slug"] == "action"
-    #     assert Title.objects.filter(slug="action").exists()
+    def test_title_update(self):
+        """
+        PUT /titles/{title_id}
+        """
+        id = Title.objects.get(name="Star Wars IV").id
+        path, method, body = (
+            f"/api/v1/titles/{id}/",
+            "put",
+            {"name": "Star Wars III", "year": 2006, "category": "movie"},
+        )
+        self._assert_allowed_for(
+            path, method, None, [self.user_2_moderator, self.user_3_admin]
+        )
+        self._assert_not_allowed_for(path, method, None, [None, self.user_1_plain])
+        response = getattr(self._client(self.user_3_admin), method)(path, body)
+        assert response.data["year"] == 2006
+        assert not Title.objects.filter(name="Star Wars III", year=2005).exists()
+        assert Title.objects.filter(name="Star Wars III", year=2006).exists()
 
-    # def test_title_update(self):
-    #     """
-    #     PUT /titles/{title_slug}
-    #     """
-    #     path, method, body = (
-    #         "/api/v1/titles/sci-fi/",
-    #         "put",
-    #         {"name": "Sci-fii", "slug": "sci-fii"},
-    #     )
-    #     self._assert_allowed_for(
-    #         path, method, None, [self.user_2_moderator, self.user_3_admin]
-    #     )
-    #     self._assert_not_allowed_for(path, method, None, [None, self.user_1_plain])
-    #     response = getattr(self._client(self.user_3_admin), method)(path, body)
-    #     assert response.data["slug"] == "sci-fii"
-    #     assert not Title.objects.filter(slug="sci-fi").exists()
-    #     assert Title.objects.filter(slug="sci-fii").exists()
+    def test_title_partial_update(self):
+        """
+        PATCH /titles/{title_id}
+        """
+        id = Title.objects.get(name="Star Wars IV").id
+        path, method, body = (f"/api/v1/titles/{id}/", "patch", {"year": 2006})
+        self._assert_allowed_for(
+            path, method, None, [self.user_2_moderator, self.user_3_admin]
+        )
+        self._assert_not_allowed_for(path, method, None, [None, self.user_1_plain])
+        response = getattr(self._client(self.user_3_admin), method)(path, body)
+        assert response.data["year"] == 2006
+        assert not Title.objects.filter(name="Star Wars IV", year=2005).exists()
+        assert Title.objects.filter(name="Star Wars IV", year=2006).exists()
 
-    # def test_title_partial_update(self):
-    #     """
-    #     PATCH /titles/{title_slug}
-    #     """
-    #     path, method, body = ("/api/v1/titles/sci-fi/", "patch", {"slug": "sci-fii"})
-    #     self._assert_allowed_for(
-    #         path, method, None, [self.user_2_moderator, self.user_3_admin]
-    #     )
-    #     self._assert_not_allowed_for(path, method, None, [None, self.user_1_plain])
-    #     response = getattr(self._client(self.user_3_admin), method)(path, body)
-    #     assert response.data["slug"] == "sci-fii"
-    #     assert not Title.objects.filter(slug="sci-fi").exists()
-    #     assert Title.objects.filter(slug="sci-fii").exists()
+    def test_title_delete(self):
+        """
+        DELETE /titles/{title_id}
+        """
+        id = Title.objects.get(name="Star Wars IV").id
+        path, method, body = (f"/api/v1/titles/{id}/", "delete", None)
+        self._assert_not_allowed_for(path, method, None, [None, self.user_1_plain])
+        response = getattr(self._client(self.user_3_admin), method)(path, body)
+        assert not Title.objects.filter(name="Star Wars IV").exists()
