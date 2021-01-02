@@ -81,7 +81,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [
-        Create(IsAny) | Update(IsAuthor) | Delete(IsStaff | IsAuthor) | Read(IsAny)
+        Create(IsAuthenticated)
+        | Update(IsAuthor)
+        | Delete(IsStaff | IsAuthor)
+        | Read(IsAny)
     ]
 
     def get_queryset(self):

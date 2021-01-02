@@ -2,7 +2,7 @@ import pytest
 
 from rest_framework.test import APIClient
 
-from ratings.models import Title, Category, User, Genre, Review
+from ratings.models import Title, Category, Comment, User, Genre, Review
 
 
 @pytest.mark.django_db
@@ -36,11 +36,18 @@ class TestsBase:
             username="user_4_plain", password="testpswd"
         )
         # Reviews
-        Review.objects.create(
+        review_1 = Review.objects.create(
             title=title_1, text="Good!", author=self.user_1_plain, score=8
         )
-        Review.objects.create(
+        review_2 = Review.objects.create(
             title=title_1, text="Okay.", author=self.user_4_plain, score=5
+        )
+        # Comments
+        self.comment_1 = Comment.objects.create(
+            review=review_2, text="True.", author=self.user_4_plain
+        )
+        self.comment_2 = Comment.objects.create(
+            review=review_2, text="Not true.", author=self.user_1_plain
         )
 
     def _client(self, user):

@@ -9,7 +9,7 @@ from ratings.models import Category
 class TestsCategory(TestsBase):
     def test_category_list(self):
         """
-        GET /categories
+        GET /categories/
         """
         path, method, body = "/api/v1/categories/", "get", None
         self._assert_allowed_for(
@@ -47,7 +47,7 @@ class TestsCategory(TestsBase):
 
     def test_category_create(self):
         """
-        POST /categories
+        POST /categories/
         """
         path, method, body = (
             "/api/v1/categories/",
@@ -64,7 +64,7 @@ class TestsCategory(TestsBase):
 
     def test_category_update(self):
         """
-        PUT /categories/{category_slug}
+        PUT /categories/{category_slug}/
         """
         path, method, body = (
             "/api/v1/categories/series/",
@@ -82,7 +82,7 @@ class TestsCategory(TestsBase):
 
     def test_category_partial_update(self):
         """
-        PATCH /categories/{category_slug}
+        PATCH /categories/{category_slug}/
         """
         path, method, body = (
             "/api/v1/categories/series/",
@@ -100,7 +100,7 @@ class TestsCategory(TestsBase):
 
     def test_category_delete(self):
         """
-        DELETE /categories/{category_slug}
+        DELETE /categories/{category_slug}/
         """
         path, method, body = ("/api/v1/categories/series/", "delete", None)
         self._assert_not_allowed_for(
