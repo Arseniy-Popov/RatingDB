@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
-from .models import User
 from ratings.roles import IsAdmin, IsModerator
+
+from .models import User
 
 
 class UserSerializerWrite(serializers.ModelSerializer):
@@ -33,3 +34,17 @@ class UserSerializerRead(serializers.ModelSerializer):
             for role in roles
             if role.is_true(self.context["request"], None, None)
         ]
+
+
+class UserAdminManagerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_admin",
+            "is_moderator",
+        ]
+        read_only_fields = ["username", "first_name", "last_name", "email"]

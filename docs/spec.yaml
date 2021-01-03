@@ -11,7 +11,7 @@ security:
 
 paths:
 
-  /user:
+  /user/:
     get:
       tags:
         - User
@@ -26,7 +26,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         'default':
-          description: Unexpected error.
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -53,12 +53,66 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         'default':
-          description: Unexpected error.
+          description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         
+  /users/{username}/:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+    get:
+      tags:
+        - User
+      summary: Get User
+      description: >
+        Permissions: **Admin**
+      responses:
+        '200':
+          description: User data returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleManager'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+        - User
+      summary: Edit User's roles
+      description: >
+        Permissions: **Admin**
+      requestBody:
+        description: Edit User's roles
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRoleManager'
+      responses:
+        '200':
+          description: User's roles changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleManager'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 
   /titles:
     get:
@@ -111,7 +165,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Title'
         'default':
-          description: Unexpected error.
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -275,7 +329,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Genre'
         'default':
-          description: Unexpected error.
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -439,7 +493,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Category'
         'default':
-          description: Unexpected error.
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -604,7 +658,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Review'
         'default':
-          description: Unexpected error.
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -782,7 +836,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Comment'
         'default':
-          description: Unexpected error.
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -1051,6 +1105,28 @@ components:
           items:
             type: string
           readOnly: true
+    
+    UserRoleManager:
+      title: User (Admin View)
+      type: object
+      description: User
+      properties:
+        username:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          readOnly: true
+        is_admin:
+          type: boolean
+        is_moderator:
+          type: boolean
   
   securitySchemes:
     BasicAuth:

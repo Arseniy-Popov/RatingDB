@@ -1,8 +1,8 @@
 import pytest
 
-from .conftest import TestsBase
-
 from ratings.models import Genre
+
+from .conftest import TestsBase
 
 
 @pytest.mark.django_db
