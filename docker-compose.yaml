@@ -1,6 +1,7 @@
 version: '3.8'
 volumes:
     postgres_data:
+    docs:
     static:
 services:
     db:
@@ -15,6 +16,7 @@ services:
         depends_on:
             - db
         volumes:
+            - docs:/app/docs/static
             - static:/app/static
         expose:
             - 8000
@@ -26,8 +28,17 @@ services:
         depends_on:
             - web
         volumes:
+            - docs:/app/docs/static
             - static:/app/static
         ports:
             - ${PORT}:80
         env_file:
             - ./.env.docker
+    docs:
+        build: ./docs
+        image: docs:latest
+        depends_on:
+            - web
+        volumes:
+            - docs:/app/docs/static
+            - static:/app/static
