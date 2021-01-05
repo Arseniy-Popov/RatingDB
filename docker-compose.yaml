@@ -31,7 +31,7 @@ services:
             - docs:/app/docs/static
             - static:/app/static
         ports:
-            - ${PORT}:80
+            - 8001:80
         env_file:
             - ./.env.docker
     docs:
