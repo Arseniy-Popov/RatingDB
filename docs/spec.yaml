@@ -3,8 +3,17 @@ info:
   title: 'RatingDB API'
   version: ''
   description: |
-    Permissions are determined with respect to the following roles:\
-    **Admin, Moderator, Authenticated, Author, Any**
+    Permissions are determined with respect to the following roles:
+    | **Role** | |
+    | ----- | ----- |
+    | **Admin** | the role has been assigned by an admin or a superuser |
+    | **Moderator** | the role has been assigned by an admin |
+    | **Authenticated** | the user has provided valid authentication credentials |
+    | **Author** | the user is the author of the entity in question, if applicable |
+    | **Any** | any user, authenticated or not |
+    
+servers:
+  - url: /api/v1/
 
 security:
   - BasicAuth: []
@@ -117,6 +126,11 @@ paths:
   /titles:
     get:
       parameters:
+      - name: page
+        in: query
+        description: ''
+        schema:
+          type: integer
       - name: category
         in: query
         description: 'Filter by slug of category'
@@ -301,6 +315,11 @@ paths:
         description: 'Search by name of Genre'
         schema:
           type: string
+      - name: page
+        in: query
+        description: ''
+        schema:
+          type: integer
       tags:
         - Genres
       summary: Get all Genres
@@ -460,6 +479,11 @@ paths:
   /categories:
     get:
       parameters:
+      - name: page
+        in: query
+        description: ''
+        schema:
+          type: integer
       - name: search
         in: query
         description: 'Search by name of Category'
@@ -630,6 +654,12 @@ paths:
       schema:
         type: integer
     get:
+      parameters:
+      - name: page
+        in: query
+        description: ''
+        schema:
+          type: integer
       tags:
         - Reviews
       summary: Get all Reviews
@@ -808,6 +838,12 @@ paths:
       schema:
         type: integer
     get:
+      parameters:
+      - name: page
+        in: query
+        description: ''
+        schema:
+          type: integer
       tags:
         - Comments
       summary: Get all Comments
