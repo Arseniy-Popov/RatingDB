@@ -4,9 +4,15 @@ from rest_framework.routers import DefaultRouter
 from .views import RetrieveCreateUser, UserAdminManager
 
 urlpatterns = [
-    path("", RetrieveCreateUser.as_view({"get": "retrieve", "post": "create"})),
+    path("user/", RetrieveCreateUser.as_view({"get": "retrieve", "post": "create"})),
     path(
-        "<slug:username>/",
-        UserAdminManager.as_view({"get": "retrieve", "patch": "partial_update"}),
+        "users/",
+        UserAdminManager.as_view({"get": "list"}),
+    ),
+    path(
+        "users/<slug:username>/",
+        UserAdminManager.as_view(
+            {"get": "retrieve", "patch": "partial_update", "delete": "destroy"}
+        ),
     ),
 ]

@@ -10,7 +10,7 @@ urlpatterns += [
         include(
             [
                 path("", include("ratings.urls")),
-                path("user/", include("users.urls")),
+                path("", include("users.urls")),
                 path("api-auth/", include("rest_framework.urls")),
             ]
         ),

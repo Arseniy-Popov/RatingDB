@@ -1,4 +1,4 @@
-from rest_framework import generics, mixins, permissions, viewsets
+from rest_framework import generics, mixins, permissions, viewsets, filters
 from rest_framework.response import Response
 
 from ratings.permissions import Any, Create, Delete, List, Read, Retrieve, Update
@@ -20,7 +20,7 @@ from .serializers import (
 
 
 class RetrieveCreateUser(
-    viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin
+    viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin
 ):
     queryset = User.objects.all()
     permission_classes = [Create(IsAny) | Read(IsAuthenticated)]
@@ -47,9 +47,15 @@ class RetrieveCreateUser(
 
 
 class UserAdminManager(
-    viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.RetrieveModelMixin
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
 ):
     queryset = User.objects.all()
-    permission_classes = [Update(IsAdmin) | Read(IsAdmin)]
+    permission_classes = [Any(IsAdmin)]
     serializer_class = UserAdminManagerSerializer
     lookup_field = "username"
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["username"]

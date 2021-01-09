@@ -20,7 +20,7 @@ class TestsGenre(TestsBase):
         )
         response = getattr(self._client(None), method)(path, body)
         assert response.data["count"] == 2
-        assert response.data["results"][1]["slug"] == "sci-fi"
+        assert response.data["results"][1]["slug"] == self.genre_2.slug
 
     def test_genre_list_with_search(self):
         """

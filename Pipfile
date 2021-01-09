@@ -16,6 +16,8 @@ pytest-django = "*"
 gunicorn = "*"
 requests = "*"
 black = "==20.8b1"
+names = "*"
+python-lorem = "*"
 
 [requires]
 python_version = "3.8"

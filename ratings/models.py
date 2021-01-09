@@ -39,7 +39,7 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name="titles"
     )
-    genre = models.ManyToManyField(Genre, related_name="titles")
+    genres = models.ManyToManyField(Genre, related_name="titles")
 
     def __str__(self):
         return f"{self.name}, {self.year}"

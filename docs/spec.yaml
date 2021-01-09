@@ -68,6 +68,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         
+  /users/:
+    get:
+      tags:
+        - Users
+      parameters:
+      - name: search
+        in: query
+        required: false
+        description: 'Search users by username'
+        schema:
+          type: string
+      summary: Get all Users
+      description: >
+        Permissions: **Admin**
+      responses:
+        '200':
+          description: List of users returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: number of items
+                  next:
+                    type: string
+                    description: link to the next page of items
+                  previous:
+                    type: string
+                    description: link to the previous page of items
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserRoleManager'
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
   /users/{username}/:
     parameters:
       - name: username
@@ -78,7 +120,7 @@ paths:
           type: string
     get:
       tags:
-        - User
+        - Users
       summary: Get User
       description: >
         Permissions: **Admin**
@@ -97,7 +139,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     patch:
       tags:
-        - User
+        - Users
       summary: Edit User's roles
       description: >
         Permissions: **Admin**
@@ -121,7 +163,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+    delete:
+      tags:
+        - Users
+      summary: Delete User
+      description: >
+        Permissions: **Admin**
+      responses:
+        '204':
+          description: User deleted
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /titles:
     get:
@@ -549,9 +605,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   
-  /categories/{category_id}:
+  /categories/{category_slug}:
     parameters:
-      - name: category_id
+      - name: category_slug
         in: path
         required: true
         description: ''

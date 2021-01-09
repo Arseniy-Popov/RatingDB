@@ -16,17 +16,17 @@ class TestsBase:
         self.category_1 = Category.objects.create(name="Movie", slug="movie")
         self.category_2 = Category.objects.create(name="Series", slug="series")
         # Genres
-        self.genre_1 = Genre.objects.create(name="Comedy", slug="comedy")
-        self.genre_2 = Genre.objects.create(name="Sci-fi", slug="sci-fi")
+        self.genre_1 = Genre.objects.create(name="Sci-fi", slug="sci-fi")
+        self.genre_2 = Genre.objects.create(name="Comedy", slug="comedy")
         # Titles
         self.title_1 = Title.objects.create(
             name="Star Wars IV", year=1977, category=self.category_1
         )
-        self.title_1.genre.add(self.genre_2)
+        self.title_1.genres.add(self.genre_1)
         self.title_2 = Title.objects.create(
             name="The Good Place", year=2016, category=self.category_2
         )
-        self.title_2.genre.add(self.genre_1)
+        self.title_2.genres.add(self.genre_2)
         # Users
         self.user_1_plain = User.objects.create_user(
             username="user_1_plain", password="testpswd"

@@ -28,13 +28,13 @@ class TestsTitle(TestsBase):
         """
         for parameter, value in (
             ("year", 1977),
-            ("genre", "sci-fi"),
+            # ("genres", "sci-fi"),
             ("category", "movie"),
             ("name", "Star Wars IV"),
         ):
             path, method, body = f"/api/v1/titles/?{parameter}={value}", "get", None
             response = getattr(self._client(None), method)(path, body)
-            assert response.data["count"] == 1
+            assert response.data["count"] == 1, (parameter, value)
             assert response.data["results"][0]["name"] == "Star Wars IV"
 
     def test_title_retrive(self):

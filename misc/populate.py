@@ -1,8 +1,9 @@
+import random
 import os
 import datetime as dt
 
 import requests
-
+import lorem
 from dotenv import load_dotenv
 
 
@@ -29,6 +30,11 @@ def _get_genre_slugs(ids):
     return slugs
 
 
+def _get_users():
+    response = requests.get(URL_RDB + "/users/", auth=AUTH_RDB).json()
+    return response["results"]
+
+
 def _check_duplicate_title(name, year):
     response = requests.get(
         URL_RDB + "/titles/", params={"name": name, "year": year}
@@ -41,6 +47,11 @@ def _check_duplicate_title(name, year):
 def _register_user(username):
     data = {"username": username, "password": os.getenv("USER_PASSWORD")}
     requests.post(URL_RDB + "/user/", data=data)
+
+
+def _generate_username():
+    first_name, last_name = names.get_first_name(), names.get_last_name()
+    return first_name.lower() + last_name.lower()
 
 
 def populate_categories():
@@ -110,6 +121,19 @@ def populate_reviews(movie_id, title_id, pages=10):
                 response = requests.post(
                     URL_RDB + f"/titles/{title_id}/reviews/", data=data, auth=auth
                 )
+            if response.status_code == 201:
+                populate_comments(title_id, response.json()["id"])
+
+
+def populate_comments(title_id, review_id, count=5):
+    count = random.randint(0, count * 2)
+    for i in range(count):
+        username = random.choice(_get_users())["username"]
+        requests.post(
+            URL_RDB + f"/titles/{title_id}/reviews/{review_id}/comments/",
+            data={"text": lorem.get_paragraph()},
+            auth=(username, os.getenv("USER_PASSWORD")),
+        )
 
 
 if __name__ == "__main__":
