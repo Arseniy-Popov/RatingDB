@@ -12,7 +12,7 @@ URL_TMDB = "https://api.themoviedb.org/3"
 RDB_ADMIN_LOGIN = os.getenv("ADMIN_LOGIN")
 RDB_ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 AUTH_RDB = (RDB_ADMIN_LOGIN, RDB_ADMIN_PASSWORD)
-AUTH_TMDB = {"api_key": os.getenv("TMDB_API"), "language":"en"}
+AUTH_TMDB = {"api_key": os.getenv("TMDB_API"), "language": "en"}
 
 
 def _slugify(input):
@@ -34,15 +34,22 @@ def _check_duplicate_title(name, year):
         URL_RDB + "/titles/", params={"name": name, "year": year}
     ).json()
     if response["count"] > 0:
-        return True
+        return response["results"][0]["id"]
     return False
+
+
+def _register_user(username):
+    data = {"username": username, "password": os.getenv("USER_PASSWORD")}
+    requests.post(URL_RDB + "/user/", data=data)
 
 
 def populate_categories():
     categories = ("Movie", "Series", "Book")
     for category in categories:
         requests.post(
-            URL_RDB + "/categories/", data={"name": category, "slug": category.lower()}, auth=AUTH_RDB
+            URL_RDB + "/categories/",
+            data={"name": category, "slug": category.lower()},
+            auth=AUTH_RDB,
         )
 
 
@@ -54,7 +61,7 @@ def populate_genres():
 
 
 def populate_movies(pages=10):
-    for page in range(1, pages+1):
+    for page in range(1, pages + 1):
         params = {**AUTH_TMDB, "page": page}
         response = requests.get(URL_TMDB + "/movie/top_rated", params=params)
         for movie in response.json()["results"]:
@@ -65,7 +72,8 @@ def populate_movies(pages=10):
             )
             year = dt.date.fromisoformat(movie["release_date"]).year
             genres = _get_genre_slugs(movie["genre_ids"])
-            if _check_duplicate_title(name, year) or movie["adult"]:
+            if (id := _check_duplicate_title(name, year)) or movie["adult"]:
+                populate_reviews(movie["id"], id)
                 continue
             data = {
                 "name": name,
@@ -74,18 +82,34 @@ def populate_movies(pages=10):
                 "genre": genres,
                 "category": category,
             }
-            requests.post(URL_RDB + "/titles/", data=data, auth=AUTH_RDB)
+            response = requests.post(
+                URL_RDB + "/titles/", data=data, auth=AUTH_RDB
+            ).json()
+            populate_reviews(movie["id"], response["id"])
 
 
 def populate_reviews(movie_id, title_id, pages=10):
-    for page in range(1, pages+1):
+    for page in range(1, pages + 1):
         params = {**AUTH_TMDB, "page": page}
         response = requests.get(URL_TMDB + f"/movie/{movie_id}/reviews", params=params)
         for review in response.json()["results"]:
-            author, text, score = review["author"], review["content"], review["author_details"]["rating"]
+            if not review["author_details"]["rating"]:
+                continue
+            author, text, score = (
+                review["author"],
+                review["content"],
+                int(review["author_details"]["rating"]),
+            )
             data = {"text": text, "score": score}
-            auth = ("author", os.getenv("USER_PASSWORD"))
-            response = requests.post(URL_RDB + f"/titles/{title_id}/reviews/", data=data, auth=AUTH_RDB)
+            auth = (author, os.getenv("USER_PASSWORD"))
+            response = requests.post(
+                URL_RDB + f"/titles/{title_id}/reviews/", data=data, auth=auth
+            )
+            if response.status_code == 401:
+                _register_user(author)
+                response = requests.post(
+                    URL_RDB + f"/titles/{title_id}/reviews/", data=data, auth=auth
+                )
 
 
 if __name__ == "__main__":

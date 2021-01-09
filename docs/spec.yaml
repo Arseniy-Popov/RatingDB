@@ -1025,6 +1025,9 @@ components:
         - year
         - category
       properties:
+        id:
+          type: integer
+          readOnly: true
         name:
           type: string
         year:

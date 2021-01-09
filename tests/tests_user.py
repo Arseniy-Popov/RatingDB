@@ -8,7 +8,7 @@ from .conftest import URL_BASE, TestsBase
 @pytest.mark.django_db
 class TestsUser(TestsBase):
     url = f"{URL_BASE}/user/"
-    
+
     def test_user_retrieve(self):
         """
         GET user/
@@ -19,15 +19,12 @@ class TestsUser(TestsBase):
         response = self._client(self.user_3_admin).get(self.url)
         assert response.data["username"] == self.user_3_admin.username
         assert response.data["roles"] == ["IsAdmin"]
-    
+
     def test_user_create(self):
         """
         POST user/
         """
-        body = {
-            "username": (new_username:="new_username"),
-            "password": "newpswd"
-        }
+        body = {"username": (new_username := "new_username"), "password": "newpswd"}
         response = self._client(None).post(self.url, body)
         assert response.data["username"] == new_username
         assert "password" not in response.data
