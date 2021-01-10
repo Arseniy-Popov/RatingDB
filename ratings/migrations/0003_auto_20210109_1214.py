@@ -5,14 +5,8 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('ratings', '0002_auto_20201117_2141'),
-    ]
+    dependencies = [("ratings", "0002_auto_20201117_2141")]
 
     operations = [
-        migrations.RenameField(
-            model_name='title',
-            old_name='genre',
-            new_name='genres',
-        ),
+        migrations.RenameField(model_name="title", old_name="genre", new_name="genres")
     ]

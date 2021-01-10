@@ -5,10 +5,7 @@ from .views import RetrieveCreateUser, UserAdminManager
 
 urlpatterns = [
     path("user/", RetrieveCreateUser.as_view({"get": "retrieve", "post": "create"})),
-    path(
-        "users/",
-        UserAdminManager.as_view({"get": "list"}),
-    ),
+    path("users/", UserAdminManager.as_view({"get": "list"})),
     path(
         "users/<slug:username>/",
         UserAdminManager.as_view(
