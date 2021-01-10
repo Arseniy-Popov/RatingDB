@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 
 load_dotenv()
-URL_RDB = "http://127.0.0.1:8080/api/v1"
+URL_RDB = "http://api.rating-db.arseniypopov.com/api/v1"
 URL_TMDB = "https://api.themoviedb.org/3"
 RDB_ADMIN_LOGIN = os.getenv("ADMIN_LOGIN")
 RDB_ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")

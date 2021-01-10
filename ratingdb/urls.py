@@ -26,6 +26,8 @@ urlpatterns += [
                 path("", include("ratings.urls")),
                 path("", include("users.urls")),
                 path("", APIRoot.as_view()),
+                path("", APIRoot.as_view()),
+                path("api-auth/", include("rest_framework.urls")),
             ]
         ),
     )
