@@ -90,7 +90,7 @@ def populate_movies(pages=10):
                 "name": name,
                 "year": year,
                 "description": description,
-                "genre": genres,
+                "genres": genres,
                 "category": category,
             }
             response = requests.post(
