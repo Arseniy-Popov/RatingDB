@@ -1,6 +1,8 @@
+__`Python` `Django` `Django REST` `PostgreSQL` `pytest` `Docker` `docker-compose` `AWS EC2` `gunicorn` `nginx`__
+
 #### About
 
-* API for a database of titles characterised by categories and genres, users with roles and permissions, reviews on and ratings of titles, and comments on reviews. Documented at [redoc](http://api.rating-db.arseniypopov.com/docs/redoc.html) / [swagger](http://api.rating-db.arseniypopov.com/docs/swagger.html).
+* API for a database of titles (characterised by categories and genres), users with roles and permissions, reviews on and ratings of titles, and comments on reviews. Documented at [redoc](http://api.rating-db.arseniypopov.com/docs/redoc.html) / [swagger](http://api.rating-db.arseniypopov.com/docs/swagger.html).
 
 #### Built with
 
