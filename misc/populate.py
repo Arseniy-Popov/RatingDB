@@ -1,11 +1,10 @@
-import random
-import os
 import datetime as dt
+import os
+import random
 
-import requests
 import lorem
+import requests
 from dotenv import load_dotenv
-
 
 load_dotenv()
 URL_RDB = "http://api.rating-db.arseniypopov.com/api/v1"

@@ -3,7 +3,9 @@ info:
   title: 'RatingDB API'
   version: ''
   description: |
+  
     Permissions are determined with respect to the following roles:
+    
     | **Role** | |
     | ----- | ----- |
     | **Admin** | the role has been assigned by an admin or a superuser |

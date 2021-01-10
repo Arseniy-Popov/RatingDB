@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 urlpatterns = [path("admin/", admin.site.urls)]
 

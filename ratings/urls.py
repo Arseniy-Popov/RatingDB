@@ -9,7 +9,6 @@ from .views import (
     TitleViewSet,
 )
 
-
 router = SimpleRouter()
 router.register("categories", CategoryViewSet)
 router.register("genres", GenreViewSet)

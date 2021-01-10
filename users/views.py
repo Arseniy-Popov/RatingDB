@@ -1,4 +1,4 @@
-from rest_framework import generics, mixins, permissions, viewsets, filters
+from rest_framework import filters, generics, mixins, permissions, viewsets
 from rest_framework.response import Response
 
 from ratings.permissions import Any, Create, Delete, List, Read, Retrieve, Update
